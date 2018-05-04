@@ -39,8 +39,11 @@ def transform(json_data):
 def update(df, table_name, incremental=False):
     engine = db_engine()
     if incremental:
+        # UPSERT
+        # https://www.postgresql.org/docs/9.5/static/sql-insert.html
         df.to_sql(table_name, engine, schema='fred', if_exists='append', index=False) ## To be used as incremental
     else:
+        # It doesn't creat with constraint :(
         df.to_sql(table_name, engine, schema='fred', if_exists='replace', index=False) ## To be used with initial flag
 
 def url(series_id):
@@ -50,6 +53,7 @@ def url(series_id):
 
 def fetch_data(series_id):
     serie_url = url(series_id)
+
     serie_json = urllib.request.urlopen(serie_url).read().decode('utf8')
     return json.loads(serie_json)
 
@@ -61,6 +65,8 @@ if __name__ == '__main__':
     gdpc1_df = transform(gdpc1['observations'])
     umcsent_df = transform(umcsent['observations'])
     unrate_df = transform(unrate['observations'])
+
+    import ipdb; ipdb.set_trace()
 
     update(gdpc1_df, 'gdpc1')
     update(umcsent_df, 'umcsent')
