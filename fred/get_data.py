@@ -1,25 +1,11 @@
 import os
 import json
-import argparse
 import urllib.request
 import pandas as pd
 from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 
-# parser = argparse.ArgumentParser()
-# incremental_group = parser.add_mutually_exclusive_group(required=False)
-# parser.add_argument('--origin', '-o', help='Origin datasource', required=True)
-# parser.add_argument('--target', '-t', help='Target datasource', required=True)
-# parser.add_argument('--country', '-c', help='Application country', required=True)
-# parser.add_argument('--table', '-T', help='Table name', required=False)
-# incremental_group.add_argument('--incremental',
-#                                dest='incremental',
-#                                action='store_true',
-#                                help='Flag to set if job is full or incremental')
-# parser.set_defaults(incremental=False)
-#
-# args = parser.parse_args()
 #logging
-# add argparse
 
 def db_engine():
     DB_HOST = os.getenv('DB_HOST', None)
@@ -38,13 +24,23 @@ def transform(json_data):
 
 def update(df, table_name, incremental=False):
     engine = db_engine()
+    conn = engine.connect()
     if incremental:
-        # UPSERT
-        # https://www.postgresql.org/docs/9.5/static/sql-insert.html
-        df.to_sql(table_name, engine, schema='fred', if_exists='append', index=False) ## To be used as incremental
+        values = ""
+        for value in df.values:
+            values += "('{}', '{}'),".format(value[0], value[1])
+        values = values.strip(",")
+        q = """INSERT INTO fred.{} (observation_date, value)
+                    VALUES {}
+                    ON CONFLICT (observation_date)
+                    DO UPDATE SET value = EXCLUDED.value""".format(table_name, values)
+
+        s = text(q)
+        conn.execute(s)
     else:
-        # It doesn't creat with constraint :(
-        df.to_sql(table_name, engine, schema='fred', if_exists='replace', index=False) ## To be used with initial flag
+        q = "TRUNCATE fred.{}".format(table_name)
+        conn.execute(q)
+        df.to_sql(table_name, engine, schema='fred', if_exists='append', index=False) ## To be used with initial flag
 
 def url(series_id):
     FRED_API_KEY = os.getenv('FRED_API_KEY', None)
@@ -56,18 +52,3 @@ def fetch_data(series_id):
 
     serie_json = urllib.request.urlopen(serie_url).read().decode('utf8')
     return json.loads(serie_json)
-
-if __name__ == '__main__':
-    gdpc1 = fetch_data('gdpc1')
-    umcsent = fetch_data('umcsent')
-    unrate = fetch_data('unrate')
-
-    gdpc1_df = transform(gdpc1['observations'])
-    umcsent_df = transform(umcsent['observations'])
-    unrate_df = transform(unrate['observations'])
-
-    import ipdb; ipdb.set_trace()
-
-    update(gdpc1_df, 'gdpc1')
-    update(umcsent_df, 'umcsent')
-    update(unrate_df, 'unrate')
