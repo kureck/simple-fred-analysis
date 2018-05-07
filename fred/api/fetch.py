@@ -4,10 +4,6 @@ import json
 import urllib.request
 import logging
 
-#tests
-#refactor
-#sql
-
 
 def url(series_id):
     FRED_API_KEY = os.getenv('FRED_API_KEY', None)
