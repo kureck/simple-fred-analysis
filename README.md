@@ -7,4 +7,4 @@ https://api.stlouisfed.org/fred/series/observations?series_id=UMCSENT&api_key=FR
 https://api.stlouisfed.org/fred/series/observations?series_id=UNRATE&api_key=FRED_KEY&file_type=json
 
 ## Requires
-alembic for migrations
+Execute psql -h host -U username -d database -a -f file
