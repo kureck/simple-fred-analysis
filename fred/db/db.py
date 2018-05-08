@@ -7,6 +7,7 @@ from sqlalchemy.sql import text
 
 
 def db_engine():
+    """Creates a database engine."""
     DB_HOST = os.getenv('DB_HOST', None)
     DB_PORT = os.getenv('DB_PORT', None)
     DB_USER = os.getenv('DB_USER', None)
@@ -20,6 +21,19 @@ def db_engine():
 
 
 def update(df, table_name, incremental=False):
+    """
+    Update database with incremental values or truncate table to prepare for
+    full insert.
+
+    Attributes
+    ----------
+    df: pandas DataFrame
+        dataframe representation of observed serie
+    table_name: string
+        table where data should be inserted
+    incremental: boolean
+        if job should be incremental or full
+    """
     engine = db_engine()
     conn = engine.connect()
     if incremental:

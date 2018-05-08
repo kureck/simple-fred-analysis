@@ -20,6 +20,7 @@ args = parser.parse_args()
 
 
 def set_log(log_level='INFO'):
+    """Set log level."""
     level = {'CRITICAL': 50, 'ERROR': 40,
              'WARNING': 30, 'INFO': 20, 'DEBUG': 10}
     log_level_number = level[log_level.upper()]
