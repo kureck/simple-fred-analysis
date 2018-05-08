@@ -53,17 +53,27 @@ Optional (if you don't have a PostgreSQL installed):
 
 ## Input
 
-Example of usage
-
 ```bash
 python run.py -s <serie> -t <serie> [--incremental] [--log-level <INFO, DEBUG, ERROR>]
+```
+
+Example of full operation:
+
+```bash
+python run.py -s gdpc1 -t gdpc1 --log-level DEBUG
+```
+
+Example of incremental operation:
+
+```bash
+python run.py -s unrate -t unrate --incremental
 ```
 
 Where:
 
 | params        | description     | available options     |
 | ------------- |:---------------:| ---------------------:|
-| -s            | observed serie  | gdpc1, umcsent, unrate|
+| -s            | observed series | gdpc1, umcsent, unrate|
 | -t            | table name      |                       |
 | --incremental | job mode        | full if absent        |
 | --log-level   | log level setup | INFO, DEBUG, ERROR    |
