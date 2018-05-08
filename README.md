@@ -2,10 +2,6 @@
 
 [FRED API Doc](https://research.stlouisfed.org/docs/api/fred/)
 
-https://api.stlouisfed.org/fred/series/observations?series_id=GDPC1&api_key=FRED_KEY&file_type=json
-https://api.stlouisfed.org/fred/series/observations?series_id=UMCSENT&api_key=FRED_KEY&file_type=json
-https://api.stlouisfed.org/fred/series/observations?series_id=UNRATE&api_key=FRED_KEY&file_type=json
-
 ## Requirements
 
 1. Python 3.5
@@ -27,9 +23,9 @@ Unzip and run the code:
 ```
 cd fred_analysis
 source bin/activate
-unzip fred_analysis.zip
-cd fred_analysis
-pip install -e .
+unzip simple-fred-analysis.zip
+cd simple-fred-analysis
+pip install -r requirements.txt
 ```
 ---
 
@@ -40,16 +36,19 @@ export DB_HOST=postgres
 export DB_PORT=5432
 export DB_USER=postgres
 export DB_PASSWD=postgres
-export DB_NAME=fred
+export DB_NAME=fred_analytics
 export FRED_API_KEY=<your_key>
 ```
 
 Optional:
+
 `docker-compose -f docker-compose.yml up -d postgres`
 
 Run the following command to create database schema and tables:
 
-`psql -h host -U username -d database -a -f sql/prepare.sql`
+`psql -h host -U username -d database -a -f sql/create_user.sql`
+
+`psql -h host -U fred -d fred_analytics -a -f sql/prepare.sql`
 
 ## Input
 

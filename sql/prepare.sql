@@ -1,3 +1,5 @@
+--User: fred
+
 create schema fred;
 
 create table fred.gdpc1(
